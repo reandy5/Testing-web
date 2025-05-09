@@ -1,19 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-N6HN27QS');</script>
+<!-- End Google Tag Manager -->
   <meta charset="UTF-8" />
   <title>Product List</title>
 </head>
 <body>
+  <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N6HN27QS"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
   <h1>Daftar Handphone</h1>
   <ul>
     <li>
-      <a href="hp-abc.html" onclick="selectPromotion()">Handphone ABC - Rp 2.500.000</a>
-      <button onclick="addToCart()">Add to Cart</button>
+      <a href="hp-abc.html" onclick="selectPromotion()">Handphone ABC - Rp 2.500.000 *Promotion*</a>
+      <button onclick="addToCartABC()">Add to Cart</button>
+    </li>
+    <li>
+      <a href="hp-xyz.html">Handphone XYZ - Rp 2.000.000</a>
+      <button onclick="addToCartXYZ()">Add to Cart</button>
     </li>
   </ul>
 
   <script>
+    // Fungsi: promo diklik
     function selectPromotion() {
       window.dataLayer = window.dataLayer || [];
       window.dataLayer.push({
@@ -21,13 +37,16 @@
         ecommerce: {
           promotion_id: "promo_hpabc",
           promotion_name: "Diskon HP ABC",
-          items: [{ item_id: "hp_abc", item_name: "Handphone ABC" }]
+          items: [{
+            item_id: "hp_abc",
+            item_name: "Handphone ABC"
+          }]
         }
       });
     }
 
-    function addToCart() {
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    // Fungsi: add to cart untuk HP ABC
+    function addToCartABC() {
       const item = {
         item_id: "hp_abc",
         item_name: "Handphone ABC",
@@ -35,6 +54,24 @@
         price: 2500000,
         quantity: 1
       };
+      addItemToCart(item);
+    }
+
+    // Fungsi: add to cart untuk HP XYZ
+    function addToCartXYZ() {
+      const item = {
+        item_id: "hp_xyz",
+        item_name: "Handphone XYZ",
+        item_category: "Handphone",
+        price: 2000000,
+        quantity: 1
+      };
+      addItemToCart(item);
+    }
+
+    // Fungsi umum untuk add item
+    function addItemToCart(item) {
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
       cart.push(item);
       localStorage.setItem("cart", JSON.stringify(cart));
 
@@ -48,20 +85,28 @@
         }
       });
 
-      alert("Ditambahkan ke keranjang!");
+      alert(item.item_name + " ditambahkan ke keranjang!");
     }
 
+    // Event view_item_list
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
       event: "view_item_list",
       ecommerce: {
         item_list_id: "hp_list_1",
         item_list_name: "Handphone List",
-        items: [{
-          item_id: "hp_abc",
-          item_name: "Handphone ABC",
-          item_category: "Handphone"
-        }]
+        items: [
+          {
+            item_id: "hp_abc",
+            item_name: "Handphone ABC",
+            item_category: "Handphone"
+          },
+          {
+            item_id: "hp_xyz",
+            item_name: "Handphone XYZ",
+            item_category: "Handphone"
+          }
+        ]
       }
     });
   </script>
