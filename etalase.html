@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Product List</title>
+</head>
+<body>
+  <h1>Daftar Handphone</h1>
+  <ul>
+    <li>
+      <a href="hp-abc.html" onclick="selectPromotion()">Handphone ABC - Rp 2.500.000</a>
+      <button onclick="addToCart()">Add to Cart</button>
+    </li>
+  </ul>
+
+  <script>
+    function selectPromotion() {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "select_promotion",
+        ecommerce: {
+          promotion_id: "promo_hpabc",
+          promotion_name: "Diskon HP ABC",
+          items: [{ item_id: "hp_abc", item_name: "Handphone ABC" }]
+        }
+      });
+    }
+
+    function addToCart() {
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const item = {
+        item_id: "hp_abc",
+        item_name: "Handphone ABC",
+        item_category: "Handphone",
+        price: 2500000,
+        quantity: 1
+      };
+      cart.push(item);
+      localStorage.setItem("cart", JSON.stringify(cart));
+
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        event: "add_to_cart",
+        ecommerce: {
+          currency: "IDR",
+          value: item.price,
+          items: [item]
+        }
+      });
+
+      alert("Ditambahkan ke keranjang!");
+    }
+
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: "view_item_list",
+      ecommerce: {
+        item_list_id: "hp_list_1",
+        item_list_name: "Handphone List",
+        items: [{
+          item_id: "hp_abc",
+          item_name: "Handphone ABC",
+          item_category: "Handphone"
+        }]
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Checkout</title>
+</head>
+<body>
+  <h1>Halaman Checkout</h1>
+  <div id="cart-items"></div>
+  <button onclick="purchase()">Bayar</button>
+
+  <script>
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    function renderCart() {
+      const el = document.getElementById("cart-items");
+      if (cart.length === 0) {
+        el.innerHTML = "<p>Keranjang kosong.</p>";
+        return;
+      }
+      el.innerHTML = "<ul>" + cart.map(item => `<li>${item.item_name} - Rp ${item.price}</li>`).join('') + "</ul>";
+    }
+
+    window.dataLayer = window.dataLayer || [];
+    if (cart.length > 0) {
+      const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      window.dataLayer.push({
+        event: "begin_checkout",
+        ecommerce: {
+          currency: "IDR",
+          value: total,
+          items: cart
+        }
+      });
+    }
+
+    function purchase() {
+      if (cart.length === 0) {
+        alert("Keranjang kosong.");
+        return;
+      }
+
+      const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      window.dataLayer.push({
+        event: "purchase",
+        ecommerce: {
+          transaction_id: Date.now().toString(),
+          currency: "IDR",
+          value: total,
+          items: cart
+        }
+      });
+
+      localStorage.removeItem("cart");
+      cart = [];
+      alert("Pembayaran berhasil!");
+      renderCart();
+    }
+
+    renderCart();
+  </script>
+</body>
+</html>
