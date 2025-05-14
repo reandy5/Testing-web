@@ -29,26 +29,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </ul>
 
   <script>
-    // Fungsi: promo diklik
-    function selectPromotion() {
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: "select_promotion",
-        ecommerce: {
-          promotion_id: "promo_hpabc",
-          promotion_name: "Diskon HP ABC",
-          items: [{
-            item_id: "hp_abc",
-            item_name: "Handphone ABC",
-            item_brand: "Samsung",
-            item_category: "Handphone",
-            item_variant: "ABC",
-            price: 2500000,
-            quantity: "1"
-          }]
-        }
-      });
-    }
 
     // Fungsi: add to cart untuk HP ABC
     function addToCartABC() {
@@ -153,6 +133,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // ]
   }
     });
+
+    window.dataLayer.push({ ecommerce: null }); // Reset terlebih dahulu
+
+window.dataLayer.push({
+  event: "select_promotion",
+  ecommerce: {
+    promotion_id: "promo_hpabc",
+    promotion_name: "Diskon HP ABC",
+    items: [{
+      item_id: "hp_abc",
+      item_name: "Handphone ABC",
+      item_brand: "Samsung",
+      item_category: "Handphone",
+      item_variant: "ABC",
+      price: 2500000,
+      quantity: "1"
+    }]
+  }
+});
+
   </script>
 </body>
 </html>
