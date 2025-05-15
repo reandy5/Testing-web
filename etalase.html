@@ -60,22 +60,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // Fungsi umum untuk add item
     function addItemToCart(item) {
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      cart.push(item);
-      localStorage.setItem("cart", JSON.stringify(cart));
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: "add_to_cart",
-        ecommerce: {
-          currency: "IDR",
-          value: item.price,
-          items: [item]
-        }
-      });
+  // Cari apakah item dengan item_id yang sama sudah ada
+  const existingItemIndex = cart.findIndex(cartItem => cartItem.item_id === item.item_id);
 
-      alert(item.item_name + " ditambahkan ke keranjang!");
+  if (existingItemIndex !== -1) {
+    // Item sudah ada, tambahkan quantity-nya
+    cart[existingItemIndex].quantity += item.quantity;
+  } else {
+    // Item belum ada, tambahkan ke cart
+    cart.push(item);
+  }
+
+  // Simpan kembali ke localStorage
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  // Push ke dataLayer
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "add_to_cart",
+    ecommerce: {
+      currency: "IDR",
+      value: item.price,
+      items: [item]
     }
+  });
+
+  alert(item.item_name + " ditambahkan ke keranjang!");
+}
+
 
     // Event view_item_list
     window.dataLayer = window.dataLayer || [];
