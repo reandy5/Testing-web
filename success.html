@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Google Tag Manager -->
+    <script>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-N6HN27QS");
+    </script>
+    <!-- End Google Tag Manager -->
+    <meta charset="UTF-8" />
+    <title>Success</title>
+  </head>
+  <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript
+      ><iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-N6HN27QS"
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe
+    ></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    <h1>Pembayaran Berhasil!</h1>
+    <div id="purchase-info"></div>
+
+    <script>
+      window.dataLayer = window.dataLayer || [];
+
+      const purchaseData = sessionStorage.getItem("purchaseData");
+
+      if (purchaseData && !sessionStorage.getItem("purchaseSent")) {
+        const data = JSON.parse(purchaseData);
+
+        // Tampilkan informasi pembelian
+        const el = document.getElementById("purchase-info");
+        let html = `<p>ID Transaksi: ${data.transaction_id}</p><ul>`;
+        data.items.forEach((item) => {
+          html += `<li>${item.item_name} - Qty: ${item.quantity} - Rp ${item.price}</li>`;
+        });
+        html += `</ul><p>Total: Rp ${data.value}</p>`;
+        el.innerHTML = html;
+
+        // Kirim dataLayer event
+        window.dataLayer.push({
+          event: "purchase",
+          ecommerce: {
+            transaction_id: data.transaction_id,
+            currency: data.currency,
+            value: data.value,
+            items: data.items,
+          },
+        });
+
+        // Tandai bahwa purchase sudah dikirim
+        sessionStorage.setItem("purchaseSent", "true");
+      } else {
+        // Kalau refresh atau data kosong
+        document.getElementById("purchase-info").innerHTML =
+          "<p>Transaksi sudah diproses atau tidak ditemukan.</p>";
+      }
+    </script>
+  </body>
+</html>
