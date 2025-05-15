@@ -51,21 +51,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     function removeFromCart() {
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      cart = cart.filter(i => i.item_id !== item.item_id);
-      localStorage.setItem("cart", JSON.stringify(cart));
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: "remove_from_cart",
-        ecommerce: {
-          currency: "IDR",
-          value: item.price,
-          items: [item]
-        }
-      });
-      alert("Dihapus dari keranjang!");
+  // Cek apakah item ada di dalam keranjang
+  const itemIndex = cart.findIndex(i => i.item_id === item.item_id);
+
+  if (itemIndex === -1) {
+    alert("Item tidak ditemukan di keranjang!");
+    return; // Stop di sini, jangan kirim event
+  }
+
+  // Hapus item dari cart
+  cart.splice(itemIndex, 1);
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  // Kirim event remove_from_cart
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "remove_from_cart",
+    ecommerce: {
+      currency: "IDR",
+      value: item.price,
+      items: [item]
     }
+  });
+
+  alert("Dihapus dari keranjang!");
+}
+
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({
