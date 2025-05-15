@@ -54,11 +54,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <h1>Daftar Handphone</h1>
   <ul>
     <li>
-      <a href="hp-abc.html">Handphone ABC - Rp 2.500.000 *Promotion*</a>
+      <a href="hp-abc.html" onlclick="selectItem1">Handphone ABC - Rp 2.500.000 *Promotion*</a>
       <button onclick="addToCartABC()">Add to Cart</button>
     </li>
     <li>
-      <a href="hp-xyz.html">Handphone XYZ - Rp 2.000.000</a>
+      <a href="hp-xyz.html" onlclick="selectItem2">Handphone XYZ - Rp 2.000.000</a>
       <button onclick="addToCartXYZ()">Add to Cart</button>
     </li>
   </ul>
@@ -131,6 +131,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     window.dataLayer.push({
       event: "view_item_list",
       ecommerce: {
+        currency: "IDR",
         item_list_id: "hp_list_1",
         item_list_name: "Handphone List",
         items: [
@@ -140,8 +141,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             item_brand: "Samsung",
             item_category: "Handphone",
             item_variant: "ABC",
-            price: "2500000",
-            quantity: "1"
+            price: 2500000,
+            quantity: 1
             
           },
           {
@@ -150,8 +151,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             item_brand: "Xiaomi",
             item_category: "Handphone",
             item_variant: "XYZ",
-            price: "2000000",
-            quantity: "1"
+            price: 2000000,
+            quantity: 1
           }
         ]
       }
@@ -163,7 +164,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       event: "view_promotion",
       ecommerce: {
     creative_name: "https://reandy5.github.io/Testing-web/hp-abc.html",
-    creative_slot: "1",
+    creative_slot: 1,
     promotion_id: "promo_hpabc",
     promotion_name: "Diskon 5.5"
         // ,
@@ -204,6 +205,51 @@ window.dataLayer.push({
     //   price: 2500000,
     //   quantity: "1"
     // }]
+  }
+});
+    }
+
+    // Fungsi: select item diklik
+    function selectItem1() {
+      // Reset terlebih dahulu
+      // window.dataLayer.push({ ecommerce: null });  
+window.dataLayer.push({
+  event: "select_item",
+  ecommerce: {
+    currency: "IDR",
+    items: [{
+      item_id: "hp_abc",
+      item_name: "Handphone ABC",
+      item_brand: "Samsung",
+      item_category: "Handphone",
+      item_variant: "ABC",
+      price: 2500000,
+      quantity: 1
+    }]
+  }
+});
+    }
+
+    // Fungsi: promo diklik
+    function selectItem2() {
+      // Reset terlebih dahulu
+      // window.dataLayer.push({ ecommerce: null });  
+window.dataLayer.push({
+  event: "select_item",
+  ecommerce: {
+    currency: "IDR",
+    item_list_id: "hp_list_1",
+        item_list_name: "Handphone List",
+    items: [{
+      item_id: "hp_xyz",
+            item_name: "Handphone XYZ",
+            item_brand: "Xiaomi",
+            item_category: "Handphone",
+            item_variant: "XYZ",
+            price: 2000000,
+            index: 1,
+            quantity: 1
+    }]
   }
 });
     }
