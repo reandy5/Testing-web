@@ -34,21 +34,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     };
 
     function addToCart() {
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      cart.push(item);
-      localStorage.setItem("cart", JSON.stringify(cart));
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({
-        event: "add_to_cart",
-        ecommerce: {
-          currency: "IDR",
-          value: item.price,
-          items: [item]
-        }
-      });
-      alert("Ditambahkan ke keranjang!");
+  // Cari apakah item dengan item_id yang sama sudah ada
+  const existingItemIndex = cart.findIndex(cartItem => cartItem.item_id === item.item_id);
+
+  if (existingItemIndex !== -1) {
+    // Item sudah ada, tambahkan quantity-nya
+    cart[existingItemIndex].quantity += item.quantity;
+  } else {
+    // Item belum ada, tambahkan ke cart
+    cart.push(item);
+  }
+
+  // Simpan kembali ke localStorage
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  // Push ke dataLayer
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: "add_to_cart",
+    ecommerce: {
+      currency: "IDR",
+      value: item.price,
+      items: [item]
     }
+  });
+
+  alert(item.item_name + " ditambahkan ke keranjang!");
+}
 
     function removeFromCart() {
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
