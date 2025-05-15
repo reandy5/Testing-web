@@ -185,7 +185,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // Fungsi: promo diklik
     function selectPromotion() {
-      window.dataLayer.push({ ecommerce: null }); // Reset terlebih dahulu
+      // Reset terlebih dahulu
+      // window.dataLayer.push({ ecommerce: null });  
 window.dataLayer.push({
   event: "select_promotion",
   ecommerce: {
