@@ -75,26 +75,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   if (itemIndex === -1) {
     alert("Item tidak ditemukan di keranjang!");
-    return; // Stop di sini, jangan kirim event
+    return;
   }
 
-  // Hapus item dari cart
-  cart.splice(itemIndex, 1);
+  // Kurangi quantity
+  cart[itemIndex].quantity -= 1;
+
+  // Simpan salinan item untuk dataLayer (sebelum dihapus atau quantity berubah)
+  const removedItem = { ...cart[itemIndex], quantity: 1 };
+
+  if (cart[itemIndex].quantity <= 0) {
+    cart.splice(itemIndex, 1); // Hapus item jika quantity sudah 0
+  }
+
+  // Simpan kembali cart ke localStorage
   localStorage.setItem("cart", JSON.stringify(cart));
 
-  // Kirim event remove_from_cart
+  // Kirim event remove_from_cart hanya dengan quantity: 1
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     event: "remove_from_cart",
     ecommerce: {
       currency: "IDR",
-      value: item.price,
-      items: [item]
+      value: removedItem.price,
+      items: [removedItem]
     }
   });
 
-  alert("Dihapus dari keranjang!");
+  alert("1 unit " + item.item_name + " dihapus dari keranjang!");
 }
+
 
 
       window.dataLayer = window.dataLayer || [];
