@@ -54,11 +54,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <h1>Daftar Handphone</h1>
   <ul>
     <li>
-      <a href="hp-abc.html" onlclick="selectItem1">Handphone ABC - Rp 2.500.000 *Promotion*</a>
+      <a href="hp-abc.html" onclick="selectItem1()">Handphone ABC - Rp 2.500.000 *Promotion*</a>
       <button onclick="addToCartABC()">Add to Cart</button>
     </li>
     <li>
-      <a href="hp-xyz.html" onlclick="selectItem2">Handphone XYZ - Rp 2.000.000</a>
+      <a href="hp-xyz.html" onclick="selectItem2()">Handphone XYZ - Rp 2.000.000</a>
       <button onclick="addToCartXYZ()">Add to Cart</button>
     </li>
   </ul>
@@ -188,6 +188,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     function selectPromotion() {
       // Reset terlebih dahulu
       // window.dataLayer.push({ ecommerce: null });  
+      window.dataLayer = window.dataLayer || [];
 window.dataLayer.push({
   event: "select_promotion",
   ecommerce: {
