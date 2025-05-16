@@ -19,7 +19,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <h1>Halaman Checkout</h1>
 
   <label for="coupon">Pilih Kupon:</label>
-  <select id="coupon" onchange="applyCoupon()">
+  <select id="coupon" onchange="renderCart()">
     <option value="">-- Tidak Pakai Kupon --</option>
     <option value="DISKON10">DISKON10 - Potongan 10%</option>
     <option value="DISKON50K">DISKON50K - Potongan Rp 50.000</option>
@@ -31,37 +31,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <script>
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    let selectedCoupon = "";
+    function getSelectedCoupon() {
+      return document.getElementById("coupon").value;
+    }
 
-    // Mapping kupon ke fungsi diskon
     const couponDiscounts = {
-      "DISKON10": (price) => price * 0.1,
-      "DISKON50K": (price) => 50000
+      "DISKON10": (total) => total * 0.1,
+      "DISKON50K": () => 50000
     };
 
-    function applyCoupon() {
-      selectedCoupon = document.getElementById("coupon").value;
-      renderCart();
-    }
-
-    function getDiscountedCartItems() {
-      return cart.map((item, index) => {
-        const discount = selectedCoupon && couponDiscounts[selectedCoupon]
-          ? couponDiscounts[selectedCoupon](item.price)
-          : 0;
-
-        return {
-          ...item,
-          discount: discount,
-          coupon: selectedCoupon || undefined,
-          index: index
-        };
-      });
-    }
-
-    function getDiscountedTotal() {
-      const items = getDiscountedCartItems();
-      return items.reduce((sum, item) => sum + (item.price - (item.discount || 0)) * item.quantity, 0);
+    function calculateTotalWithCoupon() {
+      const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const coupon = getSelectedCoupon();
+      const discount = coupon && couponDiscounts[coupon] ? couponDiscounts[coupon](subtotal) : 0;
+      return {
+        subtotal,
+        discount,
+        total: subtotal - discount
+      };
     }
 
     function renderCart() {
@@ -75,29 +62,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
 
       let html = "<ul>";
-      getDiscountedCartItems().forEach(item => {
-        const finalPrice = item.price - (item.discount || 0);
-        html += `<li>${item.item_name} - Qty: ${item.quantity} - Rp ${item.price} - Diskon: Rp ${item.discount || 0} - Total: Rp ${finalPrice * item.quantity}</li>`;
+      cart.forEach(item => {
+        const totalItem = item.price * item.quantity;
+        html += `<li>${item.item_name} - Qty: ${item.quantity} - Rp ${item.price} x ${item.quantity} = Rp ${totalItem}</li>`;
       });
       html += "</ul>";
       el.innerHTML = html;
 
-      totalEl.innerHTML = `<strong>Total Bayar: Rp ${getDiscountedTotal()}</strong>`;
+      const { subtotal, discount, total } = calculateTotalWithCoupon();
+
+      totalEl.innerHTML = `
+        <p>Subtotal: Rp ${subtotal}</p>
+        <p>Diskon: Rp ${discount}</p>
+        <strong>Total Bayar: Rp ${total}</strong>
+      `;
     }
 
-    // Push begin_checkout event
+    // Kirim begin_checkout
     window.dataLayer = window.dataLayer || [];
     if (cart.length > 0) {
-      const items = getDiscountedCartItems();
-      const total = getDiscountedTotal();
-
+      const { total } = calculateTotalWithCoupon();
       window.dataLayer.push({
         event: "begin_checkout",
         ecommerce: {
           currency: "IDR",
           value: total,
-          coupon: selectedCoupon || undefined,
-          items: items
+          coupon: getSelectedCoupon() || undefined,
+          items: cart.map((item, index) => ({ ...item, index }))
         }
       });
     }
@@ -108,14 +99,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return;
       }
 
-      const discountedItems = getDiscountedCartItems();
+      const { total } = calculateTotalWithCoupon();
 
       const purchaseData = {
         transaction_id: Date.now().toString(),
         currency: "IDR",
-        items: discountedItems,
-        value: getDiscountedTotal(),
-        coupon: selectedCoupon || undefined
+        value: total,
+        coupon: getSelectedCoupon() || undefined,
+        items: cart.map((item, index) => ({ ...item, index }))
       };
 
       sessionStorage.setItem("purchaseData", JSON.stringify(purchaseData));
