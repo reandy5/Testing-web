@@ -88,7 +88,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           currency: "IDR",
           value: total,
           coupon: getSelectedCoupon() || undefined,
-          items: cart.map((item, index) => ({ ...item, index }))
+          items: cart.map((item, index) => ({ ...item, index: index + 1 }))
         }
       });
     }
@@ -106,7 +106,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         currency: "IDR",
         value: total,
         coupon: getSelectedCoupon() || undefined,
-        items: cart.map((item, index) => ({ ...item, index }))
+        items: cart.map((item, index) => ({ ...item, index: index + 1 }))
       };
 
       sessionStorage.setItem("purchaseData", JSON.stringify(purchaseData));
