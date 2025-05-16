@@ -17,65 +17,113 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
   <h1>Halaman Checkout</h1>
-<div id="cart-items"></div>
-<button onclick="purchase()">Bayar</button>
 
-<script>
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  <label for="coupon">Pilih Kupon:</label>
+  <select id="coupon" onchange="applyCoupon()">
+    <option value="">-- Tidak Pakai Kupon --</option>
+    <option value="DISKON10">DISKON10 - Potongan 10%</option>
+    <option value="DISKON50K">DISKON50K - Potongan Rp 50.000</option>
+  </select>
 
-  function renderCart() {
-    const el = document.getElementById("cart-items");
-    if (cart.length === 0) {
-      el.innerHTML = "<p>Keranjang kosong.</p>";
-      return;
-    }
+  <div id="cart-items"></div>
+  <p id="total"></p>
+  <button onclick="purchase()">Bayar</button>
 
-    let html = "<ul>";
-    cart.forEach(item => {
-      const total = item.price * item.quantity;
-      html += `<li>${item.item_name} - Qty: ${item.quantity} - Rp ${item.price} x ${item.quantity} = Rp ${total}</li>`;
-    });
-    html += "</ul>";
-    el.innerHTML = html;
-  }
+  <script>
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let selectedCoupon = "";
 
-  // Kirim event begin_checkout
-  window.dataLayer = window.dataLayer || [];
-  if (cart.length > 0) {
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    window.dataLayer.push({
-      event: "begin_checkout",
-      ecommerce: {
-        currency: "IDR",
-        value: total,
-        items: cart
-      }
-    });
-  }
-
-  function purchase() {
-    if (cart.length === 0) {
-      alert("Keranjang kosong.");
-      return;
-    }
-
-    // Simpan data purchase ke sessionStorage agar bisa diakses di success page
-    const purchaseData = {
-      transaction_id: Date.now().toString(),
-      currency: "IDR",
-      items: cart,
-      value: cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    // Mapping kupon ke fungsi diskon
+    const couponDiscounts = {
+      "DISKON10": (price) => price * 0.1,
+      "DISKON50K": (price) => 50000
     };
-    sessionStorage.setItem("purchaseData", JSON.stringify(purchaseData));
 
-    // Kosongkan cart
-    localStorage.removeItem("cart");
+    function applyCoupon() {
+      selectedCoupon = document.getElementById("coupon").value;
+      renderCart();
+    }
 
-    // Redirect ke halaman sukses
-    window.location.href = "success.html";
-  }
+    function getDiscountedCartItems() {
+      return cart.map((item, index) => {
+        const discount = selectedCoupon && couponDiscounts[selectedCoupon]
+          ? couponDiscounts[selectedCoupon](item.price)
+          : 0;
 
-  renderCart();
-</script>
+        return {
+          ...item,
+          discount: discount,
+          coupon: selectedCoupon || undefined,
+          index: index
+        };
+      });
+    }
+
+    function getDiscountedTotal() {
+      const items = getDiscountedCartItems();
+      return items.reduce((sum, item) => sum + (item.price - (item.discount || 0)) * item.quantity, 0);
+    }
+
+    function renderCart() {
+      const el = document.getElementById("cart-items");
+      const totalEl = document.getElementById("total");
+
+      if (cart.length === 0) {
+        el.innerHTML = "<p>Keranjang kosong.</p>";
+        totalEl.innerHTML = "";
+        return;
+      }
+
+      let html = "<ul>";
+      getDiscountedCartItems().forEach(item => {
+        const finalPrice = item.price - (item.discount || 0);
+        html += `<li>${item.item_name} - Qty: ${item.quantity} - Rp ${item.price} - Diskon: Rp ${item.discount || 0} - Total: Rp ${finalPrice * item.quantity}</li>`;
+      });
+      html += "</ul>";
+      el.innerHTML = html;
+
+      totalEl.innerHTML = `<strong>Total Bayar: Rp ${getDiscountedTotal()}</strong>`;
+    }
+
+    // Push begin_checkout event
+    window.dataLayer = window.dataLayer || [];
+    if (cart.length > 0) {
+      const items = getDiscountedCartItems();
+      const total = getDiscountedTotal();
+
+      window.dataLayer.push({
+        event: "begin_checkout",
+        ecommerce: {
+          currency: "IDR",
+          value: total,
+          coupon: selectedCoupon || undefined,
+          items: items
+        }
+      });
+    }
+
+    function purchase() {
+      if (cart.length === 0) {
+        alert("Keranjang kosong.");
+        return;
+      }
+
+      const discountedItems = getDiscountedCartItems();
+
+      const purchaseData = {
+        transaction_id: Date.now().toString(),
+        currency: "IDR",
+        items: discountedItems,
+        value: getDiscountedTotal(),
+        coupon: selectedCoupon || undefined
+      };
+
+      sessionStorage.setItem("purchaseData", JSON.stringify(purchaseData));
+      localStorage.removeItem("cart");
+      window.location.href = "success.html";
+    }
+
+    renderCart();
+  </script>
 </body>
 </html>
