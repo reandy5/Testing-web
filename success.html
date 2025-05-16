@@ -39,18 +39,18 @@
   if (purchaseData && !sessionStorage.getItem("purchaseSent")) {
     const data = JSON.parse(purchaseData);
 
-    // Tampilkan info
+    // Tampilkan informasi
     const el = document.getElementById("purchase-info");
     let html = `<p>ID Transaksi: ${data.transaction_id}</p><ul>`;
     data.items.forEach(item => {
-      const finalPrice = item.price - (item.discount || 0);
-      html += `<li>${item.item_name} - Qty: ${item.quantity} - Harga: Rp ${item.price} - Diskon: Rp ${item.discount || 0} - Total: Rp ${finalPrice * item.quantity}</li>`;
+      const totalItem = item.price * item.quantity;
+      html += `<li>${item.item_name} - Qty: ${item.quantity} - Rp ${item.price} x ${item.quantity} = Rp ${totalItem}</li>`;
     });
-    html += `</ul><p>Total Pembayaran: Rp ${data.value}</p>`;
+    html += `</ul><p>Total Bayar: Rp ${data.value}</p>`;
     if (data.coupon) html += `<p>Kupon Digunakan: ${data.coupon}</p>`;
     el.innerHTML = html;
 
-    // Kirim event ke GA4
+    // Kirim dataLayer
     window.dataLayer.push({
       event: "purchase",
       ecommerce: {
