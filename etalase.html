@@ -63,7 +63,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </li>
   </ul>
 
-  <script>
+<!--   <script>
 
     // Fungsi: add to cart untuk HP ABC
     function addToCartABC() {
@@ -253,6 +253,171 @@ window.dataLayer.push({
   }
 });
     }
-  </script>
+  </script> -->
+
+  <script>
+  // Pastikan inisialisasi dataLayer hanya dilakukan sekali di awal (di luar GTM tag juga tidak masalah)
+  window.dataLayer = window.dataLayer || [];
+
+  // Fungsi: add to cart untuk HP ABC
+  function addToCartABC() {
+    const item = {
+      item_id: "hp_abc",
+      item_name: "Handphone ABC",
+      item_brand: "Samsung",
+      item_category: "Handphone",
+      item_variant: "ABC",
+      price: 2500000,
+      quantity: 1
+    };
+    addItemToCart(item);
+  }
+
+  // Fungsi: add to cart untuk HP XYZ
+  function addToCartXYZ() {
+    const item = {
+      item_id: "hp_xyz",
+      item_name: "Handphone XYZ",
+      item_brand: "Xiaomi",
+      item_category: "Handphone",
+      item_variant: "XYZ",
+      price: 2000000,
+      quantity: 1
+    };
+    addItemToCart(item);
+  }
+
+  // Fungsi umum untuk menambahkan item ke cart dan push ke dataLayer
+  function addItemToCart(item) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const existingItemIndex = cart.findIndex(cartItem => cartItem.item_id === item.item_id);
+
+    if (existingItemIndex !== -1) {
+      cart[existingItemIndex].quantity += item.quantity;
+    } else {
+      cart.push(item);
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    window.dataLayer.push({
+      event: "add_to_cart",
+      ecommerce: {
+        currency: "IDR",
+        value: item.price,
+        items: [item]
+      }
+    });
+
+    alert(item.item_name + " ditambahkan ke keranjang!");
+  }
+
+  // Event view_item_list
+  window.dataLayer.push({
+    event: "view_item_list",
+    ecommerce: {
+      currency: "IDR",
+      item_list_id: "hp_list_1",
+      item_list_name: "Handphone List",
+      items: [
+        {
+          item_id: "hp_abc",
+          item_name: "Handphone ABC",
+          item_brand: "Samsung",
+          item_category: "Handphone",
+          item_variant: "ABC",
+          price: 2500000,
+          quantity: 1
+        },
+        {
+          item_id: "hp_xyz",
+          item_name: "Handphone XYZ",
+          item_brand: "Xiaomi",
+          item_category: "Handphone",
+          item_variant: "XYZ",
+          price: 2000000,
+          quantity: 1
+        }
+      ]
+    }
+  });
+
+  // Event view_promotion
+  window.dataLayer.push({
+    event: "view_promotion",
+    ecommerce: {
+      creative_name: "https://reandy5.github.io/Testing-web/hp-abc.html",
+      creative_slot: 1,
+      promotion_id: "promo_hpabc",
+      promotion_name: "Diskon 5.5"
+      // Anda bisa aktifkan bagian items jika dibutuhkan
+      // items: [...]
+    }
+  });
+
+  // Fungsi: promo diklik
+  function selectPromotion() {
+    window.dataLayer.push({
+      event: "select_promotion",
+      ecommerce: {
+        creative_name: "https://reandy5.github.io/Testing-web/promo.html",
+        creative_slot: "1",
+        promotion_id: "promo_hpabc",
+        promotion_name: "Diskon HP ABC"
+        // items: [...] jika diperlukan
+      }
+    });
+  }
+
+  // Fungsi: select item untuk HP ABC
+  function selectItem1() {
+    // Reset ecommerce data
+    window.dataLayer.push({ ecommerce: null });
+
+    // Push item ABC
+    window.dataLayer.push({
+      event: "select_item",
+      ecommerce: {
+        currency: "IDR",
+        items: [{
+          item_id: "hp_abc",
+          item_name: "Handphone ABC",
+          item_brand: "Samsung",
+          item_category: "Handphone",
+          item_variant: "ABC",
+          price: 2500000,
+          quantity: 1
+        }]
+      }
+    });
+  }
+
+  // Fungsi: select item untuk HP XYZ
+  function selectItem2() {
+    // Reset ecommerce data
+    window.dataLayer.push({ ecommerce: null });
+
+    // Push item XYZ
+    window.dataLayer.push({
+      event: "select_item",
+      ecommerce: {
+        currency: "IDR",
+        item_list_id: "hp_list_1",
+        item_list_name: "Handphone List",
+        items: [{
+          item_id: "hp_xyz",
+          item_name: "Handphone XYZ",
+          item_brand: "Xiaomi",
+          item_category: "Handphone",
+          item_variant: "XYZ",
+          price: 2000000,
+          quantity: 1
+        }]
+      }
+    });
+  }
+</script>
+
 </body>
 </html>
