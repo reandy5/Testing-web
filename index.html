@@ -50,14 +50,12 @@ src="https://www.facebook.com/tr?id=1360472342248918&ev=PageView&noscript=1"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
 <script type="module">
-  // Import the functions you need from the SDKs you need
+  // 1. Import SDK (Menambahkan Remote Config)
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+  import { getRemoteConfig, fetchAndActivate, getString } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-remote-config.js";
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  // 2. Your web app's Firebase configuration
   const firebaseConfig = {
     apiKey: "AIzaSyClZySQiEZiZV5d7ASBSrXQvvClPBuzodw",
     authDomain: "testingtracker-2d31c.firebaseapp.com",
@@ -69,9 +67,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     measurementId: "G-SCQMLR639K"
   };
 
-  // Initialize Firebase
+  // 3. Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
+  
+  // 4. Initialize & Setup Remote Config
+  const remoteConfig = getRemoteConfig(app);
+  
+  // KHUSUS TESTING: Set interval ke 0 agar perubahan di dashboard Firebase langsung muncul tanpa nunggu cache
+  remoteConfig.settings.minimumFetchIntervalMillis = 0;
+
+  // 5. Ambil data varian A/B Test
+  fetchAndActivate(remoteConfig)
+    .then(() => {
+      // Mengambil nilai parameter 'banner_variant' dari Firebase Console
+      const variant = getString(remoteConfig, "banner_variant") || "default";
+      
+      console.log("A/B Test Variant Terpilih:", variant);
+
+      // 6. Kirim sinyal ke GTM (Data Layer)
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push({
+        'event': 'firebase_ready',
+        'assigned_variant': variant
+      });
+    })
+    .catch((err) => {
+      console.error("Firebase Remote Config Error:", err);
+    });
 </script>
     
     <h1>HP XYZ</h1>
